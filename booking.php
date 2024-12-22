@@ -39,30 +39,46 @@ function calculate_price($route_from, $route_to, $prices) {
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $package_id = $_POST['package_id'];
+    $truck_id = $_POST['truck_id'];
     $route_from = $_POST['route_from'];
     $route_to = $_POST['route_to'];
     $price = calculate_price($route_from, $route_to, $route_prices);
     $delivery_status = 'In Transit';
     $payment_status = 'Unpaid';
 
-    // Update package status to "in-transit"
-    $update_package = "UPDATE packages SET status = 'in-transit' WHERE package_id = '$package_id'";
-    if (!mysqli_query($conn, $update_package)) {
-        echo "<script>alert('Error updating package status: " . mysqli_error($conn) . "');</script>";
-    }
+    // Get the driver ID based on the selected truck
+    $driver_query = "SELECT driver_id FROM truck WHERE truck_id = '$truck_id' AND status = 'Available'";
+    $driver_result = mysqli_query($conn, $driver_query);
+    $driver = mysqli_fetch_assoc($driver_result);
 
-    // Insert new booking record
-    $sql = "INSERT INTO cargo (truck_id, driver_id, route_from, route_to, package_volume, price, status, payment_status)
-            VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
-    if (mysqli_query($conn, $sql)) {
-        // Insert report data into the reports table
-        $insert_report = "INSERT INTO reports (truck_id, driver_id, route_from, route_to, package_volume, price, delivery_status, payment_status)
-                          VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
-        mysqli_query($conn, $insert_report);
+    if ($driver) {
+        $driver_id = $driver['driver_id'];
 
-        echo "<script>alert('Booking created successfully.'); window.location.href = 'booking.php';</script>";
+        // Update package status to "in-transit"
+        $update_package = "UPDATE packages SET status = 'in-transit' WHERE package_id = '$package_id'";
+        if (!mysqli_query($conn, $update_package)) {
+            echo "<script>alert('Error updating package status: " . mysqli_error($conn) . "');</script>";
+        }
+
+        // Insert new booking record
+        $sql = "INSERT INTO cargo (truck_id, driver_id, route_from, route_to, package_volume, price, status, payment_status)
+                VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
+        if (mysqli_query($conn, $sql)) {
+            // Update truck status to "In Use"
+            $update_truck = "UPDATE truck SET status = 'In Use' WHERE truck_id = '$truck_id'";
+            mysqli_query($conn, $update_truck);
+
+            // Insert report data into the reports table
+            $insert_report = "INSERT INTO reports (truck_id, driver_id, route_from, route_to, package_volume, price, delivery_status, payment_status)
+                              VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
+            mysqli_query($conn, $insert_report);
+
+            echo "<script>alert('Booking created successfully.'); window.location.href = 'booking.php';</script>";
+        } else {
+            echo "<script>alert('Error creating booking: " . mysqli_error($conn) . "');</script>";
+        }
     } else {
-        echo "<script>alert('Error creating booking: " . mysqli_error($conn) . "');</script>";
+        echo "<script>alert('This truck is currently unavailable.');</script>";
     }
 }
 ?>
@@ -212,14 +228,26 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </header>
             <div class="dashboard-main-container">
                 <form method="POST" action="">
-                    <label for="package_id">Package ID</label>
+                    <label for="package_id">Package</label>
                     <select name="package_id" required>
                         <option value="">Select a Package</option>
                         <?php
-                        $packages_query = "SELECT package_id FROM packages WHERE status = 'pending'";
+                        $packages_query = "SELECT package_id, description FROM packages WHERE status = 'pending'";
                         $packages_result = mysqli_query($conn, $packages_query);
                         while ($package = mysqli_fetch_assoc($packages_result)) {
-                            echo "<option value='{$package['package_id']}'>{$package['package_id']}</option>";
+                            echo "<option value='{$package['package_id']}'>{$package['description']}</option>";
+                        }
+                        ?>
+                    </select>
+
+                    <label for="truck_id">Truck</label>
+                    <select name="truck_id" required>
+                        <option value="">Select a Truck</option>
+                        <?php
+                        $trucks_query = "SELECT truck_id, license_plate FROM truck WHERE status = 'Available'";
+                        $trucks_result = mysqli_query($conn, $trucks_query);
+                        while ($truck = mysqli_fetch_assoc($trucks_result)) {
+                            echo "<option value='{$truck['truck_id']}'>{$truck['license_plate']}</option>";
                         }
                         ?>
                     </select>
