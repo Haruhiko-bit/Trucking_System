@@ -36,7 +36,9 @@ function sync_cargo_to_reports($conn, $cargo_id, $delivery_status, $payment_stat
 }
 
 // Fetch cargo records from the database
-$sql = "SELECT * FROM cargo";
+$sql = "SELECT c.*, p.description AS package_description 
+        FROM cargo c 
+        JOIN packages p ON c.package_id = p.package_id";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -103,7 +105,7 @@ $result = mysqli_query($conn, $sql);
                             <th>Driver ID</th>
                             <th>Route From</th>
                             <th>Route To</th>
-                            <th>Package Volume</th>
+                            <th>Package Description</th>
                             <th>Price</th>
                             <th>Delivery Status</th>
                             <th>Payment Status</th>
@@ -121,7 +123,7 @@ $result = mysqli_query($conn, $sql);
                             <td><?php echo $cargo['driver_id']; ?></td>
                             <td><?php echo $cargo['route_from']; ?></td>
                             <td><?php echo $cargo['route_to']; ?></td>
-                            <td><?php echo $cargo['package_volume']; ?></td>
+                            <td><?php echo $cargo['package_description']; ?></td>
                             <td>$<?php echo number_format($price, 2); ?></td>
                             <td><?php echo $cargo['status']; ?></td>
                             <td><?php echo $cargo['payment_status']; ?></td>
