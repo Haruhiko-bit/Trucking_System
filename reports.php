@@ -3,7 +3,9 @@
 include 'config.php';
 
 // Fetch reports from the database
-$sql = "SELECT * FROM reports";
+$sql = "SELECT r.*, p.description as package_description
+        FROM reports r
+        JOIN packages p ON r.cargo_id = p.package_id";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -204,7 +206,7 @@ $result = mysqli_query($conn, $sql);
                                 <th>Driver ID</th>
                                 <th>Route From</th>
                                 <th>Route To</th>
-                                <th>Package Volume</th>
+                                <th>Package Description</th>
                                 <th>Price</th>
                                 <th>Delivery Status</th>
                                 <th>Payment Status</th>
@@ -218,7 +220,7 @@ $result = mysqli_query($conn, $sql);
                                     <td><?php echo $row['driver_id']; ?></td>
                                     <td><?php echo $row['route_from']; ?></td>
                                     <td><?php echo $row['route_to']; ?></td>
-                                    <td><?php echo $row['package_volume']; ?></td>
+                                    <td><?php echo $row['package_description']; ?></td>
                                     <td>$<?php echo number_format($row['price'], 2); ?></td>
                                     <td><?php echo $row['delivery_status']; ?></td>
                                     <td><?php echo $row['payment_status']; ?></td>
