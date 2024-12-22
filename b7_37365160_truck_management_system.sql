@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql206.byetcluster.com
--- Generation Time: Dec 22, 2024 at 10:53 AM
+-- Generation Time: Dec 22, 2024 at 12:25 PM
 -- Server version: 10.6.19-MariaDB
 -- PHP Version: 7.2.22
 
@@ -57,15 +57,23 @@ CREATE TABLE `cargo` (
   `route_from` int(11) NOT NULL,
   `route_to` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  `payment_status` enum('Paid','Unpaid') DEFAULT 'Unpaid'
+  `payment_status` enum('Paid','Unpaid') DEFAULT 'Unpaid',
+  `package_id` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `cargo`
 --
 
-INSERT INTO `cargo` (`cargo_id`, `truck_id`, `driver_id`, `package_volume`, `status`, `route_from`, `route_to`, `price`, `payment_status`) VALUES
-(18, 2, 2, '1000.00', 'Delivered', 1, 20, '1400.00', 'Paid');
+INSERT INTO `cargo` (`cargo_id`, `truck_id`, `driver_id`, `package_volume`, `status`, `route_from`, `route_to`, `price`, `payment_status`, `package_id`) VALUES
+(26, 1, 0, '1200.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(25, 3, 0, '0.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(24, 3, 0, '0.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(23, 2, 0, '0.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(27, 2, 0, '3000.50', 'In Transit', 2, 19, '1200.00', 'Unpaid', 0),
+(28, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(29, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(30, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 1);
 
 -- --------------------------------------------------------
 
@@ -110,7 +118,7 @@ CREATE TABLE `packages` (
 --
 
 INSERT INTO `packages` (`package_id`, `customer_id`, `product_id`, `weight`, `status`, `description`) VALUES
-(1, 1, 101, '1500.00', 'pending', 'rock'),
+(1, 1, 101, '1500.00', 'in-transit', 'rock'),
 (2, 2, 102, '1200.00', 'pending', 'steel'),
 (3, 3, 103, '250.00', 'pending', 'wood'),
 (4, 4, 104, '3000.50', 'pending', 'concrete'),
@@ -161,6 +169,20 @@ CREATE TABLE `reports` (
   `delivery_status` enum('In Transit','Delivered','Pending') NOT NULL,
   `payment_status` enum('Paid','Unpaid') NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+
+--
+-- Dumping data for table `reports`
+--
+
+INSERT INTO `reports` (`report_id`, `cargo_id`, `truck_id`, `driver_id`, `route_from`, `route_to`, `package_volume`, `price`, `delivery_status`, `payment_status`) VALUES
+(13, 26, 1, 0, 1, 20, '1200.00', '1400.00', 'In Transit', 'Unpaid'),
+(12, 0, 3, 0, 1, 20, '0.00', '1400.00', 'In Transit', 'Unpaid'),
+(11, 0, 3, 0, 1, 20, '0.00', '1400.00', 'In Transit', 'Unpaid'),
+(10, 0, 2, 0, 1, 20, '0.00', '1400.00', 'In Transit', 'Unpaid'),
+(14, 27, 2, 0, 2, 19, '3000.50', '1200.00', 'In Transit', 'Unpaid'),
+(15, 28, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid'),
+(16, 29, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid'),
+(17, 30, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid');
 
 -- --------------------------------------------------------
 
@@ -244,7 +266,8 @@ ALTER TABLE `bookings`
 ALTER TABLE `cargo`
   ADD PRIMARY KEY (`cargo_id`),
   ADD KEY `truck_id` (`truck_id`),
-  ADD KEY `driver_id` (`driver_id`);
+  ADD KEY `driver_id` (`driver_id`),
+  ADD KEY `fk_cargo_package` (`package_id`);
 
 --
 -- Indexes for table `drivers`
@@ -302,7 +325,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `cargo`
 --
 ALTER TABLE `cargo`
-  MODIFY `cargo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `cargo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `drivers`
@@ -326,7 +349,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT for table `routes`
