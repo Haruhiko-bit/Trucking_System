@@ -62,15 +62,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // Insert new booking record
         $sql = "INSERT INTO cargo (truck_id, driver_id, route_from, route_to, package_volume, price, status, payment_status)
-                VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
+                VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
         if (mysqli_query($conn, $sql)) {
+            // Get the last inserted cargo ID
+            $cargo_id = mysqli_insert_id($conn);
+
             // Update truck status to "In Use"
             $update_truck = "UPDATE truck SET status = 'In Use' WHERE truck_id = '$truck_id'";
             mysqli_query($conn, $update_truck);
 
             // Insert report data into the reports table
-            $insert_report = "INSERT INTO reports (truck_id, driver_id, route_from, route_to, package_volume, price, delivery_status, payment_status)
-                              VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
+            $insert_report = "INSERT INTO reports (cargo_id, truck_id, driver_id, route_from, route_to, package_volume, price, delivery_status, payment_status)
+                              VALUES ('$cargo_id', '$truck_id', '$driver_id', '$route_from', '$route_to', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
             mysqli_query($conn, $insert_report);
 
             echo "<script>alert('Booking created successfully.'); window.location.href = 'booking.php';</script>";
@@ -244,10 +247,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <select name="truck_id" required>
                         <option value="">Select a Truck</option>
                         <?php
-                        $trucks_query = "SELECT truck_id, license_plate FROM truck WHERE status = 'Available'";
+                        $trucks_query = "SELECT truck_id, truck_type FROM truck WHERE status = 'Available'";
                         $trucks_result = mysqli_query($conn, $trucks_query);
                         while ($truck = mysqli_fetch_assoc($trucks_result)) {
-                            echo "<option value='{$truck['truck_id']}'>{$truck['license_plate']}</option>";
+                            echo "<option value='{$truck['truck_id']}'>{$truck['truck_type']}</option>";
                         }
                         ?>
                     </select>
