@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql206.byetcluster.com
--- Generation Time: Dec 23, 2024 at 12:52 AM
+-- Generation Time: Dec 23, 2024 at 03:11 AM
 -- Server version: 10.6.19-MariaDB
 -- PHP Version: 7.2.22
 
@@ -73,12 +73,16 @@ INSERT INTO `cargo` (`cargo_id`, `truck_id`, `driver_id`, `package_volume`, `sta
 (27, 2, 0, '3000.50', 'In Transit', 2, 19, '1200.00', 'Unpaid', 0),
 (28, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
 (29, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
+(53, 3, 0, '2000.00', 'Delivered', 15, 1, '900.00', 'Paid', 10),
+(54, 4, 0, '1500.00', 'Delivered', 1, 20, '1400.00', 'Paid', 8),
 (52, 1, 1, '1000.00', 'In Transit', 1, 20, '1400.00', 'Paid', 0),
 (50, 3, 0, '2000.00', 'Delivered', 1, 20, '1400.00', 'Paid', 7),
 (49, 2, 0, '500.00', 'Delivered', 1, 9, '400.00', 'Paid', 5),
 (48, 3, 0, '250.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 3),
 (47, 3, 0, '1200.00', 'Delivered', 1, 20, '1400.00', 'Paid', 2),
-(46, 3, 0, '1500.00', 'Delivered', 1, 20, '1400.00', 'Paid', 1);
+(46, 3, 0, '1500.00', 'Delivered', 1, 20, '1400.00', 'Paid', 1),
+(56, 3, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 8),
+(55, 3, 0, '2000.00', 'Delivered', 1, 20, '1400.00', 'Paid', 10);
 
 -- --------------------------------------------------------
 
@@ -123,8 +127,8 @@ CREATE TABLE `packages` (
 --
 
 INSERT INTO `packages` (`package_id`, `customer_id`, `product_id`, `weight`, `status`, `description`) VALUES
-(10, 0, 101, '2000.00', 'pending', 'Concrete'),
-(8, 0, 102, '1500.00', 'pending', 'Glass'),
+(10, 0, 101, '2000.00', 'delivered', 'Concrete'),
+(8, 0, 102, '1500.00', 'in-transit', 'Glass'),
 (6, 1, 103, '1000.00', 'pending', 'Woods');
 
 -- --------------------------------------------------------
@@ -195,7 +199,11 @@ INSERT INTO `reports` (`report_id`, `cargo_id`, `truck_id`, `driver_id`, `route_
 (29, 42, 0, 0, 1, 20, '1200.00', '1400.00', 'Delivered', 'Unpaid'),
 (32, 45, 4, 0, 2, 20, '3000.50', '1300.00', 'Delivered', 'Paid'),
 (31, 44, 3, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid'),
-(28, 41, 3, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid');
+(28, 41, 3, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid'),
+(40, 53, 3, 0, 15, 1, '2000.00', '900.00', 'Delivered', 'Paid'),
+(41, 54, 4, 0, 1, 20, '1500.00', '1400.00', 'Delivered', 'Paid'),
+(42, 55, 3, 0, 1, 20, '2000.00', '1400.00', 'Delivered', 'Paid'),
+(43, 56, 3, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid');
 
 -- --------------------------------------------------------
 
@@ -229,9 +237,9 @@ CREATE TABLE `truck` (
 --
 
 INSERT INTO `truck` (`truck_id`, `license_plate`, `truck_type`, `capacity`, `status`, `driver_id`) VALUES
-(3, 'ZAC-2341', 'Flat Bed', '2000.00', 'Available', NULL),
+(3, 'ZAC-2341', 'Flat Bed', '2000.00', 'In Use', NULL),
 (2, 'LMN-9101', 'Container', '2500.00', 'Available', NULL),
-(1, 'MPN-3912', 'Flat Bed', '2000.00', 'In Use', NULL),
+(1, 'MPN-3912', 'Flat Bed', '2000.00', 'Available', NULL),
 (4, 'ABT-1245 ', 'Box', '1500.00', 'Available', NULL);
 
 -- --------------------------------------------------------
@@ -259,7 +267,8 @@ INSERT INTO `users` (`user_id`, `name`, `username`, `password`, `role`, `contact
 (13, 'Heisenberg', 'Heisenberg', '$2y$10$rjrW.1SWkGkRO2cyMcQQq.bCR8ZdZLjk8dncp8sd8.b/BjPQFBbCi', 'customer', '1111', 'Bsu'),
 (16, 'Driver3', '', '$2y$10$FYMG6jGTuyBQZ3YVp.gdEObAAYpZ/Mp8gthlza3SL3nQdPkiIhGty', 'driver', '3333', 'bsu'),
 (15, 'Driver2', '', '$2y$10$PLV7uv5RW.UnjxHu7c4K2O7.yv1MsWUCHYmbWjGNZfteMl5CUVUk2', 'driver', '2222', 'bsu'),
-(14, 'Driver1', '', '$2y$10$dap.uQH.kpuc0rvRuuvNhuMOxZnrIIr/MtnZ2qNKB6UDq.FTK40i2', 'driver', '1111', 'Bsu');
+(14, 'Driver1', '', '$2y$10$dap.uQH.kpuc0rvRuuvNhuMOxZnrIIr/MtnZ2qNKB6UDq.FTK40i2', 'driver', '1111', 'Bsu'),
+(17, 'Jesse', 'Jesse', '$2y$10$u1detSSF/srtVwOZ8L61N.ONo5O/YRxRaiUh/ZVmItTUq1ObUGXX.', 'driver', '4444', 'Bsu');
 
 --
 -- Indexes for dumped tables
@@ -340,7 +349,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `cargo`
 --
 ALTER TABLE `cargo`
-  MODIFY `cargo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=53;
+  MODIFY `cargo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=57;
 
 --
 -- AUTO_INCREMENT for table `drivers`
@@ -364,7 +373,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
 -- AUTO_INCREMENT for table `routes`
@@ -376,7 +385,7 @@ ALTER TABLE `routes`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -35,10 +35,9 @@ function calculate_price($route_from, $route_to, $prices) {
 // Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $truck_id = $_POST['truck_id'];
-    $driver_id = $_POST['driver_id'];
     $route_from = $_POST['route_from'];
     $route_to = $_POST['route_to'];
-    $package_volume = $_POST['package_volume'];
+    $package_id = $_POST['package_id'];
     $price = calculate_price($route_from, $route_to, $route_prices);
     $delivery_status = 'In Transit';
     $payment_status = $_POST['payment_status'];
@@ -52,16 +51,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "<script>alert('That truck is not available.');</script>";
     } else {
         // Insert new cargo record
-        $sql = "INSERT INTO cargo (truck_id, driver_id, route_from, route_to, package_volume, price, status, payment_status)
-                VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
+        $sql = "INSERT INTO cargo (truck_id, driver_id, route_from, route_to, package_id, package_volume, price, status, payment_status)
+                VALUES ('$truck_id', (SELECT driver_id FROM truck WHERE truck_id = '$truck_id'), '$route_from', '$route_to', '$package_id', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
         if (mysqli_query($conn, $sql)) {
+            // Get the last inserted cargo ID
+            $cargo_id = mysqli_insert_id($conn);
+
             // Update truck status to "In Use"
             $update_truck = "UPDATE truck SET status = 'In Use' WHERE truck_id = '$truck_id'";
             mysqli_query($conn, $update_truck);
             
             // Insert report data into the reports table
-            $insert_report = "INSERT INTO reports (truck_id, driver_id, route_from, route_to, package_volume, price, delivery_status, payment_status)
-                              VALUES ('$truck_id', '$driver_id', '$route_from', '$route_to', '$package_volume', '$price', '$delivery_status', '$payment_status')";
+            $insert_report = "INSERT INTO reports (cargo_id, truck_id, driver_id, route_from, route_to, package_volume, price, delivery_status, payment_status)
+                              VALUES ('$cargo_id', '$truck_id', (SELECT driver_id FROM truck WHERE truck_id = '$truck_id'), '$route_from', '$route_to', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
             mysqli_query($conn, $insert_report);
 
             echo "<script>alert('Cargo added and report created successfully.'); window.location.href = 'cargo.php';</script>";
@@ -220,7 +222,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </header>
             <div class="dashboard-main-container">
                 <form method="POST" action="">
-                    <label for="truck_id">Truck ID</label>
+                    <label for="truck_id">Truck</label>
                     <select name="truck_id" required>
                         <option value="">Select a Truck</option>
                         <?php
@@ -232,8 +234,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         ?>
                     </select>
 
-                    <label for="driver_id">Driver ID</label>
-                    <input type="text" name="driver_id" required>
+                    <label for="package_id">Package</label>
+                    <select name="package_id" required>
+                        <option value="">Select a Package</option>
+                        <?php
+                        $packages_query = "SELECT package_id, description FROM packages WHERE status = 'pending'";
+                        $packages_result = mysqli_query($conn, $packages_query);
+                        while ($package = mysqli_fetch_assoc($packages_result)) {
+                            echo "<option value='{$package['package_id']}'>{$package['description']}</option>";
+                        }
+                        ?>
+                    </select>
 
                     <label for="route_from">Route From</label>
                     <select name="route_from" required>
@@ -250,9 +261,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             echo "<option value='$i'>Route $i</option>";
                         } ?>
                     </select>
-
-                    <label for="package_volume">Package Volume</label>
-                    <input type="text" name="package_volume" required>
 
                     <label for="payment_status">Payment Status</label>
                     <select name="payment_status" required>
