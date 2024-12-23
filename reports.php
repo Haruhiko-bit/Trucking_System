@@ -3,9 +3,11 @@
 include 'config.php';
 
 // Fetch reports from the database
-$sql = "SELECT r.*, p.description as package_description
+$sql = "SELECT r.*, p.description as package_description, t.driver_id as truck_driver_id
         FROM reports r
-        JOIN packages p ON r.cargo_id = p.package_id";
+        JOIN cargo c ON r.cargo_id = c.cargo_id
+        JOIN packages p ON c.package_id = p.package_id
+        JOIN truck t ON c.truck_id = t.truck_id";
 $result = mysqli_query($conn, $sql);
 ?>
 
@@ -217,7 +219,7 @@ $result = mysqli_query($conn, $sql);
                             <?php while ($row = mysqli_fetch_assoc($result)): ?>
                                 <tr>
                                     <td><?php echo $row['truck_id']; ?></td>
-                                    <td><?php echo $row['driver_id']; ?></td>
+                                    <td><?php echo $row['truck_driver_id']; ?></td>
                                     <td><?php echo $row['route_from']; ?></td>
                                     <td><?php echo $row['route_to']; ?></td>
                                     <td><?php echo $row['package_description']; ?></td>
