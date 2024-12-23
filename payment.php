@@ -18,6 +18,11 @@ $sql = "SELECT b.*, c.status as cargo_status, c.payment_status, p.description as
         WHERE b.customer_id = '$user_id'";
 $result = mysqli_query($conn, $sql);
 
+// Check for SQL errors
+if (!$result) {
+    die("Error fetching bookings: " . mysqli_error($conn));
+}
+
 // Handle payment and cancellation actions
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $action = $_POST['action'];
@@ -27,18 +32,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // Update delivery and payment status
         $update_cargo = "UPDATE cargo SET status = 'Delivered', payment_status = 'Paid' WHERE cargo_id = '$cargo_id'";
         $update_report = "UPDATE reports SET delivery_status = 'Delivered', payment_status = 'Paid' WHERE cargo_id = '$cargo_id'";
-        if (mysqli_query($conn, $update_cargo) && mysqli_query($conn, $update_report)) {
+        $update_package = "UPDATE packages SET status = 'delivered' WHERE package_id = (SELECT package_id FROM cargo WHERE cargo_id = '$cargo_id')";
+        
+        // Execute queries and check for errors
+        if (mysqli_query($conn, $update_cargo) && mysqli_query($conn, $update_report) && mysqli_query($conn, $update_package)) {
             echo "<script>alert('Payment successful. The package has been marked as Delivered.'); window.location.href = 'payment.php';</script>";
         } else {
             echo "<script>alert('Error processing payment: " . mysqli_error($conn) . "');</script>";
+            error_log("SQL Error: " . mysqli_error($conn));
         }
     } elseif ($action == "cancel") {
         // Update package status to 'pending'
         $update_package = "UPDATE packages SET status = 'pending' WHERE package_id = (SELECT package_id FROM cargo WHERE cargo_id = '$cargo_id')";
-        if (mysqli_query($conn, $update_package)) {
+        $update_cargo = "UPDATE cargo SET status = 'Pending' WHERE cargo_id = '$cargo_id'";
+        $update_report = "UPDATE reports SET delivery_status = 'Pending' WHERE cargo_id = '$cargo_id'";
+        
+        // Execute queries and check for errors
+        if (mysqli_query($conn, $update_package) && mysqli_query($conn, $update_cargo) && mysqli_query($conn, $update_report)) {
             echo "<script>alert('Package has been cancelled.'); window.location.href = 'payment.php';</script>";
         } else {
             echo "<script>alert('Error cancelling package: " . mysqli_error($conn) . "');</script>";
+            error_log("SQL Error: " . mysqli_error($conn));
         }
     }
 }
