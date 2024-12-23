@@ -1,9 +1,10 @@
-<?php 
+<?php
 // Include database connection
 include 'config.php';
 
 // Fetch reports from the database
-$sql = "SELECT r.*, p.description as package_description, t.driver_id as truck_driver_id
+$sql = "SELECT r.*, p.description as package_description, 
+        COALESCE(t.driver_id, t.truck_id) as truck_driver_id
         FROM reports r
         JOIN cargo c ON r.cargo_id = c.cargo_id
         JOIN packages p ON c.package_id = p.package_id

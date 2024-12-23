@@ -36,7 +36,8 @@ function sync_cargo_to_reports($conn, $cargo_id, $delivery_status, $payment_stat
 }
 
 // Fetch cargo records from the database
-$sql = "SELECT c.*, p.description as package_description, t.driver_id as truck_driver_id
+$sql = "SELECT c.*, p.description as package_description, 
+        COALESCE(t.driver_id, t.truck_id) as truck_driver_id
         FROM cargo c
         JOIN packages p ON c.package_id = p.package_id
         JOIN truck t ON c.truck_id = t.truck_id";
