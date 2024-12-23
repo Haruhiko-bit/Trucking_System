@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: sql206.byetcluster.com
--- Generation Time: Dec 22, 2024 at 12:25 PM
+-- Generation Time: Dec 22, 2024 at 10:10 PM
 -- Server version: 10.6.19-MariaDB
 -- PHP Version: 7.2.22
 
@@ -73,7 +73,10 @@ INSERT INTO `cargo` (`cargo_id`, `truck_id`, `driver_id`, `package_volume`, `sta
 (27, 2, 0, '3000.50', 'In Transit', 2, 19, '1200.00', 'Unpaid', 0),
 (28, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
 (29, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 0),
-(30, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 1);
+(30, 1, 1, '1500.00', 'Delivered', 1, 20, '1400.00', 'Paid', 1),
+(31, 2, 2, '1200.00', 'Delivered', 1, 19, '1300.00', 'Paid', 2),
+(32, 3, 1, '250.00', 'Delivered', 1, 20, '1400.00', 'Paid', 3),
+(33, 1, 0, '1500.00', 'In Transit', 1, 20, '1400.00', 'Unpaid', 1);
 
 -- --------------------------------------------------------
 
@@ -182,7 +185,10 @@ INSERT INTO `reports` (`report_id`, `cargo_id`, `truck_id`, `driver_id`, `route_
 (14, 27, 2, 0, 2, 19, '3000.50', '1200.00', 'In Transit', 'Unpaid'),
 (15, 28, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid'),
 (16, 29, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid'),
-(17, 30, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid');
+(17, 30, 1, 1, 1, 20, '1500.00', '1400.00', 'Delivered', 'Paid'),
+(18, 31, 2, 2, 1, 19, '1200.00', '1300.00', 'Delivered', 'Paid'),
+(19, 32, 3, 1, 1, 20, '250.00', '1400.00', 'Delivered', 'Paid'),
+(20, 33, 1, 0, 1, 20, '1500.00', '1400.00', 'In Transit', 'Unpaid');
 
 -- --------------------------------------------------------
 
@@ -325,7 +331,7 @@ ALTER TABLE `bookings`
 -- AUTO_INCREMENT for table `cargo`
 --
 ALTER TABLE `cargo`
-  MODIFY `cargo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `cargo_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `drivers`
@@ -349,7 +355,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `report_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT for table `routes`
