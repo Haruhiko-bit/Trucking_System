@@ -5,14 +5,13 @@ include 'config.php';
 // Check if the form is submitted
 if (isset($_POST['update'])) {
     $package_id = $_POST['package_id'];
-    $customer_id = $_POST['customer_id'];
     $product_id = $_POST['product_id'];
     $description = $_POST['description']; // Updated from volume to description
     $weight = $_POST['weight'];
     $status = $_POST['status'];
 
     // Update the package details in the database
-    $sql = "UPDATE packages SET customer_id='$customer_id', product_id='$product_id', description='$description', weight='$weight', status='$status' WHERE package_id='$package_id'";
+    $sql = "UPDATE packages SET product_id='$product_id', description='$description', weight='$weight', status='$status' WHERE package_id='$package_id'";
 
     if (mysqli_query($conn, $sql)) {
         header("Location: package.php?success=Package updated successfully");
@@ -95,6 +94,12 @@ if (isset($_GET['id'])) {
         .cancel-btn {
             background-color: #f44336;
             margin-top: 10px;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            padding: 10px;
+            display: inline-block;
+            border-radius: 5px;
         }
 
         .cancel-btn:hover {
@@ -108,23 +113,20 @@ if (isset($_GET['id'])) {
         <form action="" method="POST">
             <input type="hidden" name="package_id" value="<?php echo $package['package_id']; ?>">
 
-            <label for="customer_id">Customer ID</label>
-            <input type="text" id="customer_id" name="customer_id" value="<?php echo $package['customer_id']; ?>" required>
-
             <label for="product_id">Product ID</label>
             <input type="text" id="product_id" name="product_id" value="<?php echo $package['product_id']; ?>" required>
 
-            <label for="description">Description</label> <!-- Updated field -->
-            <input type="text" id="description" name="description" value="<?php echo $package['description']; ?>" required> <!-- Updated field -->
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" value="<?php echo $package['description']; ?>" required>
 
             <label for="weight">Weight (kg)</label>
             <input type="text" id="weight" name="weight" value="<?php echo $package['weight']; ?>" required>
 
             <label for="status">Status</label>
             <select id="status" name="status" required>
-                <option value="Pending" <?php echo ($package['status'] == 'Pending') ? 'selected' : ''; ?>>Pending</option>
-                <option value="in-transit" <?php echo ($package['status'] == 'in-transit') ? 'selected' : ''; ?>>in-transit</option>
-                <option value="Delivered" <?php echo ($package['status'] == 'Delivered') ? 'selected' : ''; ?>>Delivered</option>
+                <option value="pending" <?php echo ($package['status'] == 'pending') ? 'selected' : ''; ?>>Pending</option>
+                <option value="in-transit" <?php echo ($package['status'] == 'in-transit') ? 'selected' : ''; ?>>In Transit</option>
+                <option value="delivered" <?php echo ($package['status'] == 'delivered') ? 'selected' : ''; ?>>Delivered</option>
             </select>
 
             <button type="submit" name="update">Update Package</button>

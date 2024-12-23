@@ -4,24 +4,34 @@ include 'config.php';
 
 // Handle form submission for adding a new truck
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    $truck_id = $_POST['truck_id'];
     $license_plate = $_POST['license_plate'];
     $truck_type = $_POST['truck_type'];
     $capacity = $_POST['capacity'];
     $status = $_POST['status'];
 
-    $sql = "INSERT INTO truck (license_plate, truck_type, capacity, status) 
-            VALUES ('$license_plate', '$truck_type', '$capacity', '$status')";
+    // Check if the truck ID already exists
+    $check_sql = "SELECT * FROM truck WHERE truck_id = '$truck_id'";
+    $check_result = mysqli_query($conn, $check_sql);
 
-    if (mysqli_query($conn, $sql)) {
-        header("Location: truck.php");
+    if (mysqli_num_rows($check_result) > 0) {
+        echo "<script>alert('Truck ID already exists!');</script>";
     } else {
-        echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        $sql = "INSERT INTO truck (truck_id, license_plate, truck_type, capacity, status) 
+                VALUES ('$truck_id', '$license_plate', '$truck_type', '$capacity', '$status')";
+
+        if (mysqli_query($conn, $sql)) {
+            header("Location: truck.php");
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -127,7 +137,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             font-size: 16px;
         }
 
-        input, select {
+        input,
+        select {
             padding: 10px;
             margin-bottom: 15px;
             font-size: 16px;
@@ -149,22 +160,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard-container">
         <!-- Sidebar -->
         <div class="sidebar">
-    <h2>Admin Panel</h2>
-    <ul class="sidebar-links">
-        <li><a href="admin_dashboard.php" class="sidebar-btn">Dashboard</a></li>
-        <li><a href="package.php" class="sidebar-btn">Package</a></li>
-        <li><a href="product.php" class="sidebar-btn">Product</a></li>
-        <li><a href="cargo.php" class="sidebar-btn">Cargo</a></li>
-        <li><a href="truck.php" class="sidebar-btn">Truck</a></li>
-        <li><a href="users.php" class="sidebar-btn">Users</a></li>
-        <li><a href="reports.php" class="sidebar-btn">Reports</a></li>
-    </ul>
-</div>
-
+            <h2>Admin Panel</h2>
+            <ul class="sidebar-links">
+                <li><a href="admin_dashboard.php" class="sidebar-btn">Dashboard</a></li>
+                <li><a href="package.php" class="sidebar-btn">Package</a></li>
+                <li><a href="product.php" class="sidebar-btn">Product</a></li>
+                <li><a href="cargo.php" class="sidebar-btn">Cargo</a></li>
+                <li><a href="truck.php" class="sidebar-btn">Truck</a></li>
+                <li><a href="users.php" class="sidebar-btn">Users</a></li>
+                <li><a href="reports.php" class="sidebar-btn">Reports</a></li>
+            </ul>
+        </div>
 
         <!-- Main Content -->
         <div class="main-content">
@@ -178,6 +189,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 <!-- Add Truck Form -->
                 <form method="POST" action="">
+                    <label for="truck_id">Truck ID:</label>
+                    <input type="text" id="truck_id" name="truck_id" required>
+
                     <label for="license_plate">License Plate:</label>
                     <input type="text" id="license_plate" name="license_plate" required>
 
@@ -200,4 +214,5 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 </body>
+
 </html>

@@ -202,9 +202,8 @@ $result = mysqli_query($conn, $sql);
                     <table border="1">
                         <tr>
                             <th>Package ID</th>
-                            <th>Customer ID</th>
                             <th>Product ID</th>
-                            <th>Description</th> <!-- Updated -->
+                            <th>Description</th>
                             <th>Weight</th>
                             <th>Status</th>
                             <th>Actions</th>
@@ -212,9 +211,8 @@ $result = mysqli_query($conn, $sql);
                         <?php while ($row = mysqli_fetch_assoc($result)): ?>
                             <tr>
                                 <td><?php echo $row['package_id']; ?></td>
-                                <td><?php echo $row['customer_id']; ?></td>
                                 <td><?php echo $row['product_id']; ?></td>
-                                <td><?php echo $row['description']; ?></td> <!-- Updated -->
+                                <td><?php echo $row['description']; ?></td>
                                 <td><?php echo $row['weight']; ?> kg</td>
                                 <td><?php echo $row['status']; ?></td>
                                 <td>

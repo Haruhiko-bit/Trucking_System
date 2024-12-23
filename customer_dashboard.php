@@ -102,8 +102,7 @@
             <ul class="sidebar-links">
                 <li><a href="customer_dashboard.php" class="sidebar-btn">Dashboard</a></li>
                 <li><a href="booking.php" class="sidebar-btn">Booking</a></li>
-                <li><a href="payment.php" class="sidebar-btn">Payment</a></li>
-                <li><a href="logout.php" class="sidebar-btn">Logout</a></li>
+                <li><a href="booking_info.php" class="sidebar-btn">Payment</a></li>
             </ul>
         </div>
 

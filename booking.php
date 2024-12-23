@@ -76,7 +76,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                               VALUES ('$cargo_id', '$truck_id', '$driver_id', '$route_from', '$route_to', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
             mysqli_query($conn, $insert_report);
 
-            echo "<script>alert('Booking created successfully.'); window.location.href = 'booking.php';</script>";
+            // Redirect to booking_info.php with the booking information
+            header("Location: booking_info.php?cargo_id=$cargo_id&truck_id=$truck_id&route_from=$route_from&route_to=$route_to&package_id=$package_id&price=$price&status=$delivery_status&payment_status=$payment_status");
+            exit();
         } else {
             echo "<script>alert('Error creating booking: " . mysqli_error($conn) . "');</script>";
         }
@@ -93,124 +95,25 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-        }
-
-        .dashboard-container {
-            display: flex;
-            height: 100vh;
-        }
-
-        .sidebar {
-            width: 220px;
-            background-color: #333;
-            color: white;
-            padding-top: 20px;
-        }
-
-        .sidebar h2 {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar-links {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .sidebar-links li {
-            padding: 15px;
-            text-align: center;
-        }
-
-        .sidebar-links li a {
-            color: white;
-            text-decoration: none;
-            display: block;
-            font-size: 16px;
-        }
-
-        .sidebar-links li a:hover {
-            background-color: #444;
-            transition: 0.3s;
-        }
-
-        .main-content {
-            flex-grow: 1;
-            padding: 20px;
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        header h1 {
-            font-size: 24px;
-        }
-
-        .logout-btn {
-            padding: 10px 20px;
-            background-color: #ff5722;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-
-        .logout-btn:hover {
-            background-color: #e64a19;
-            transition: 0.3s;
-        }
-
-        .dashboard-main-container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        form {
-            max-width: 600px;
-            margin: 0 auto;
-            display: grid;
-            gap: 15px;
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-        }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-align: center;
-            display: block;
-            width: 100%;
-        }
-
-        .btn:hover {
-            background-color: #45a049;
-        }
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; background-color: #f4f4f4; }
+        .dashboard-container { display: flex; height: 100vh; }
+        .sidebar { width: 220px; background-color: #333; color: white; padding-top: 20px; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; }
+        .sidebar-links { list-style: none; padding: 0; margin: 0; }
+        .sidebar-links li { padding: 15px; text-align: center; }
+        .sidebar-links li a { color: white; text-decoration: none; display: block; font-size: 16px; }
+        .sidebar-links li a:hover { background-color: #444; transition: 0.3s; }
+        .main-content { flex-grow: 1; padding: 20px; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        header h1 { font-size: 24px; }
+        .logout-btn { padding: 10px 20px; background-color: #ff5722; color: white; text-decoration: none; border-radius: 5px; }
+        .logout-btn:hover { background-color: #e64a19; transition: 0.3s; }
+        .dashboard-main-container { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        form { max-width: 600px; margin: 0 auto; display: grid; gap: 15px; }
+        label { font-weight: bold; display: block; }
+        input, select { width: 100%; padding: 10px; margin-bottom: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        .btn { padding: 10px 20px; background-color: #4CAF50; color: white; border: none; border-radius: 5px; cursor: pointer; text-align: center; display: block; width: 100%; }
+        .btn:hover { background-color: #45a049; }
     </style>
 </head>
 <body>
@@ -220,14 +123,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <ul class="sidebar-links">
                 <li><a href="customer_dashboard.php">Dashboard</a></li>
                 <li><a href="booking.php">Booking</a></li>
-                <li><a href="payment.php">Payment</a></li>
-                <li><a href="logout.php">Logout</a></li>
+                <li><a href="booking_info.php">Payment</a></li>
             </ul>
         </div>
         <div class="main-content">
             <header>
                 <h1>Booking</h1>
-                <a href="index.php" class="logout-btn">Logout</a>
             </header>
             <div class="dashboard-main-container">
                 <form method="POST" action="">

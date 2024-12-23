@@ -4,18 +4,19 @@ include 'config.php';
 
 // Insert package logic (if form submitted)
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $customer_id = $_POST['customer_id'];
     $product_id = $_POST['product_id'];
-    $volume = $_POST['volume'];
+    $description = $_POST['description']; // Updated from volume to description
     $weight = $_POST['weight'];
     $status = $_POST['status'];
 
     // Insert query
-    $sql = "INSERT INTO packages (customer_id, product_id, volume, weight, status) 
-            VALUES ('$customer_id', '$product_id', '$volume', '$weight', '$status')";
+    $sql = "INSERT INTO packages (product_id, description, weight, status) 
+            VALUES ('$product_id', '$description', '$weight', '$status')";
     
     if (mysqli_query($conn, $sql)) {
-        echo "New package added successfully!";
+        // Redirect to package.php after successful insertion
+        header("Location: package.php");
+        exit();
     } else {
         echo "Error: " . $sql . "<br>" . mysqli_error($conn);
     }
@@ -75,14 +76,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <div class="form-container">
         <h2>Add Package</h2>
         <form method="POST" action="">
-            <label for="customer_id">Customer ID</label>
-            <input type="text" id="customer_id" name="customer_id" required>
-
             <label for="product_id">Product ID</label>
             <input type="text" id="product_id" name="product_id" required>
 
-            <label for="volume">Volume</label>
-            <input type="number" step="0.01" id="volume" name="volume" required>
+            <label for="description">Description</label>
+            <input type="text" id="description" name="description" required>
 
             <label for="weight">Weight</label>
             <input type="number" step="0.01" id="weight" name="weight" required>
