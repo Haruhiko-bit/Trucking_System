@@ -61,9 +61,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         // Insert new cargo record
-        $sql = "INSERT INTO cargo (truck_id, driver_id, package_id, route_from, route_to, package_volume, price, status, payment_status)
-                VALUES ('$truck_id', '$driver_id', '$package_id', '$route_from', '$route_to', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
-        if (mysqli_query($conn, $sql)) {
+        $cargo_query = "INSERT INTO cargo (truck_id, driver_id, package_id, route_from, route_to, package_volume, price, status, payment_status)
+                        VALUES ('$truck_id', '$driver_id', '$package_id', '$route_from', '$route_to', (SELECT weight FROM packages WHERE package_id = '$package_id'), '$price', '$delivery_status', '$payment_status')";
+        if (mysqli_query($conn, $cargo_query)) {
             // Get the last inserted cargo ID
             $cargo_id = mysqli_insert_id($conn);
 
